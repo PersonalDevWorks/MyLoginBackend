@@ -3,13 +3,16 @@ import { getConnection, sql } from '../db';
 import bcrypt from 'bcrypt';
 
 //sample controller function to handle GET requests for all users
-export const getAllUsers = (req: Request, res: Response) => {
-    // Logic to fetch all users from the database or any data source
-    const users = [
-        { id: 1, name: 'John Doe', email: 'john.doe@example.com' },
-        { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com' }
-    ];
-    res.status(200).json(users);
+export const getAllUsers = async (req: Request, res: Response) => {
+    try{
+        const pool = await getConnection();
+        const result = await pool.request().query('SELECT * FROM Users');
+        res.status(200).json(result.recordset);
+
+    }catch (error){
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 }
 
 export const createUser = async (req: Request, res: Response) => {
